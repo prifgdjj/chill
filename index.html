@@ -5,21 +5,118 @@
   <title>Chill Canteen</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      margin: 0;
-      background: radial-gradient(circle at top, #4e342e, #2e1e1b);
       font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #4e342e, #2e1e1b);
       color: #f5f5f5;
       overflow-x: hidden;
     }
 
-    /* Floating emoji background */
+    /* Loading screen */
+    #loading-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: #1e1e1e;
+      color: #fff5e6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      z-index: 9999;
+      font-weight: bold;
+      font-family: monospace;
+      animation: fadeOut 1s ease 5s forwards;
+    }
+
+    #loading-icon {
+      font-size: 4rem;
+      animation: spin 2s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    .dots::after {
+      content: '';
+      display: inline-block;
+      animation: dots 1.5s steps(3, end) infinite;
+      width: 1em;
+      text-align: left;
+    }
+
+    @keyframes dots {
+      0% { content: ''; }
+      33% { content: '.'; }
+      66% { content: '..'; }
+      100% { content: '...'; }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+
+    #main-content {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 1s ease;
+      animation: showMain 0s linear 5s forwards;
+    }
+
+    @keyframes showMain {
+      to { opacity: 1; visibility: visible; }
+    }
+
+    /* Scrolling header */
+    .scrolling-container {
+      width: 100%;
+      height: 100px;
+      background: linear-gradient(90deg, #d97706, #b45309, #92400e);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      z-index: 2;
+    }
+
+    .scrolling-text {
+      font-size: 36px;
+      font-weight: bold;
+      color: #fff9db;
+      white-space: nowrap;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      animation: scroll 25s linear infinite;
+      position: absolute;
+      display: flex;
+      align-items: center;
+      transition: color 0.3s;
+    }
+
+    .scrolling-text:hover {
+      color: #ffeab9;
+    }
+
+    .scrolling-text:nth-child(2) {
+      animation-delay: -12.5s;
+    }
+
+    @keyframes scroll {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* Background emojis */
     .background-floaters {
       position: fixed;
-      top: 0;
-      left: 0;
-      height: 100vh;
-      width: 100vw;
+      top: 0; left: 0;
+      height: 100vh; width: 100vw;
       z-index: 0;
       pointer-events: none;
       overflow: hidden;
@@ -33,25 +130,47 @@
     }
 
     @keyframes floatUp {
-      0% {
-        transform: translateY(100vh);
-        opacity: 0.12;
-      }
-      100% {
-        transform: translateY(-10vh);
-        opacity: 0;
-      }
+      0% { transform: translateY(100vh); opacity: 0.12; }
+      100% { transform: translateY(-10vh); opacity: 0; }
     }
 
-    h1 {
-      text-align: center;
-      font-size: 3rem;
-      color: #ffe0b2;
+    /* Title and Join Tag */
+    .title-wrapper {
+      display: flex;
+      justify-content: center;
       margin-top: 2rem;
-      z-index: 1;
       position: relative;
     }
 
+    h1 {
+      font-size: 3rem;
+      color: #ffffff;
+      position: relative;
+      display: inline-block;
+    }
+
+    .minecraft-tag {
+      position: absolute;
+      top: -20px;
+      right: -60px;
+      background: none;
+      color: yellow;
+      font-family: 'Comic Sans MS', sans-serif;
+      font-weight: bold;
+      font-size: 1.2rem;
+      text-shadow: 2px 2px 0 #000;
+      animation: pulseTag 2s infinite ease-in-out;
+      text-decoration: none;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    @keyframes pulseTag {
+      0%, 100% { transform: scale(1) rotate(-20deg); }
+      50% { transform: scale(1.2) rotate(-20deg); }
+    }
+
+    /* Tabs and cards */
     .tabs {
       display: flex;
       justify-content: center;
@@ -113,6 +232,7 @@
       box-shadow: 0 8px 30px rgba(255, 224, 178, 0.2);
     }
 
+    /* Discord widget */
     .discord-widget {
       margin: 3rem auto;
       background: rgba(255, 255, 255, 0.05);
@@ -127,6 +247,7 @@
       width: 100%;
     }
 
+    /* Bottom cat */
     #cat-helper {
       position: fixed;
       bottom: 20px;
@@ -155,81 +276,100 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    @media (max-width: 768px) {
+      .scrolling-text { font-size: 24px; letter-spacing: 3px; }
+      .scrolling-container { height: 70px; }
+    }
+
     @media (max-width: 600px) {
-      .card-container {
-        flex-direction: column;
-        align-items: center;
-      }
+      .card-container { flex-direction: column; align-items: center; }
     }
   </style>
 </head>
 <body>
-
-  <!-- Floating Background Emojis -->
-  <div class="background-floaters">
-    <script>
-      const icons = ['☕', '🍩', '🍔', '🥤', '🧁', '🍟', '🥐'];
-      const bg = document.currentScript.parentElement;
-      for (let i = 0; i < 30; i++) {
-        const emoji = document.createElement('div');
-        emoji.className = 'float-emoji';
-        emoji.innerText = icons[Math.floor(Math.random() * icons.length)];
-        emoji.style.left = Math.random() * 100 + 'vw';
-        emoji.style.top = Math.random() * 100 + 'vh';
-        emoji.style.animationDuration = (10 + Math.random() * 15) + 's';
-        emoji.style.fontSize = (1.2 + Math.random()) + 'rem';
-        bg.appendChild(emoji);
-      }
-    </script>
+  <!-- Loading -->
+  <div id="loading-screen">
+    <div id="loading-icon">🍽️</div>
+    Preparing your table<span class="dots"></span>
   </div>
 
-  <!-- Main Content -->
-  <h1>☕ Chill Canteen</h1>
-
-  <div class="tabs">
-    <button class="tab" onclick="showTab('staff')">Staff</button>
-    <button class="tab" onclick="showTab('rules')">Rules</button>
-    <button class="tab" onclick="showTab('partner')">Partnering</button>
-  </div>
-
-  <div class="tab-content active" id="staff">
-    <div class="card-container">
-      <div class="card">👑 <br><strong>Owner</strong><br>Avinan</div>
-      <div class="card">👑 <br><strong>Owner</strong><br>Tizi</div>
-      <div class="card">🧑‍💼 <br><strong>Manager</strong><br>HayzedaNoob</div>
-      <div class="card">🔥 <br><strong>Moderator</strong><br>Malik</div>
-      <div class="card">🔥 <br><strong>Moderator</strong><br>Cosmic</div>
+  <div id="main-content">
+    <!-- Scrolling Banner -->
+    <div class="scrolling-container">
+      <div class="scrolling-text">GRAB A TRAY, TAKE A SEAT — VIBES ARE SERVED FRESH ∞</div>
+      <div class="scrolling-text">GRAB A TRAY, TAKE A SEAT — VIBES ARE SERVED FRESH ∞</div>
     </div>
-  </div>
 
-  <div class="tab-content" id="rules">
-    <div class="card-container">
-      <div class="card">1️⃣ <br>Respect & Kindness</div>
-      <div class="card">2️⃣ <br>No NSFW or spam</div>
-      <div class="card">3️⃣ <br>Use correct channels</div>
-      <div class="card">4️⃣ <br>Follow Discord TOS</div>
-      <div class="card">5️⃣ <br>Use Common Sense</div>
-
+    <!-- Floating emojis -->
+    <div class="background-floaters">
+      <script>
+        const icons = ['☕', '🍩', '🍔', '🥤', '🧁', '🍟', '🥐'];
+        const bg = document.currentScript.parentElement;
+        for (let i = 0; i < 30; i++) {
+          const emoji = document.createElement('div');
+          emoji.className = 'float-emoji';
+          emoji.innerText = icons[Math.floor(Math.random() * icons.length)];
+          emoji.style.left = Math.random() * 100 + 'vw';
+          emoji.style.top = Math.random() * 100 + 'vh';
+          emoji.style.animationDuration = (10 + Math.random() * 15) + 's';
+          emoji.style.fontSize = (1.2 + Math.random()) + 'rem';
+          bg.appendChild(emoji);
+        }
+      </script>
     </div>
-  </div>
 
-  <div class="tab-content" id="partner">
-    <div class="card-container">
-      <div class="card">💬 Active 10+ Members</div>
-      <div class="card">✅ SFW Only</div>
-      <div class="card">🔐 Follow Discord's Terms of Service</div>
-      <div class="card">📢 Visible Partner Channel</div>
+    <!-- Title and Tag -->
+    <div class="title-wrapper">
+      <h1>☕ Chill Canteen
+        <a href="https://discord.gg/ykhxf3SCgY" target="_blank" class="minecraft-tag">Join Now!</a>
+      </h1>
     </div>
-  </div>
 
-  <div class="discord-widget">
-    <iframe src="https://discord.com/widget?id=1332583707663405086&theme=dark" height="500" allowtransparency="true" frameborder="0"
-      sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
-  </div>
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab" onclick="showTab('staff')">Staff</button>
+      <button class="tab" onclick="showTab('rules')">Rules</button>
+      <button class="tab" onclick="showTab('partner')">Partnering</button>
+    </div>
 
-  <!-- Cat Emoji & Message -->
-  <div id="cat-helper">🐱</div>
-  <div id="cat-msg">You clicked something!</div>
+    <div class="tab-content active" id="staff">
+      <div class="card-container">
+        <div class="card">👑 <br><strong>Owner</strong><br>Avinan</div>
+        <div class="card">👑 <br><strong>Owner</strong><br>Tizi</div>
+        <div class="card">🧰 <br><strong>Manager</strong><br>HayzedaNoob</div>
+        <div class="card">🔧 <br><strong>Moderator</strong><br>Malik</div>
+        <div class="card">🔧 <br><strong>Moderator</strong><br>Cosmic</div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="rules">
+      <div class="card-container">
+        <div class="card">1️⃣ <br>Respect everyone</div>
+        <div class="card">2️⃣ <br>No NSFW or spam</div>
+        <div class="card">3️⃣ <br>Use correct channels</div>
+        <div class="card">4️⃣ <br>Follow Discord TOS</div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="partner">
+      <div class="card-container">
+        <div class="card">💬 10+ Active Members</div>
+        <div class="card">✅ SFW Only</div>
+        <div class="card">🔔  Must Follow Discord's TOS</div>
+        <div class="card">📢 Visible Partner Channel</div>
+      </div>
+    </div>
+
+    <!-- Discord Embed -->
+    <div class="discord-widget">
+      <iframe src="https://discord.com/widget?id=1332583707663405086&theme=dark" height="500" allowtransparency="true" frameborder="0"
+        sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+    </div>
+
+    <!-- Cat Helper -->
+    <div id="cat-helper">🐱</div>
+    <div id="cat-msg">You clicked something!</div>
+  </div>
 
   <script>
     function showTab(id) {
@@ -248,6 +388,5 @@
       setTimeout(() => msg.style.display = 'none', 2000);
     });
   </script>
-
 </body>
 </html>
