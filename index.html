@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chill Canteen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, #4e342e, #2e1e1b);
+      font-family: 'Segoe UI', sans-serif;
+      color: #f5f5f5;
+      overflow-x: hidden;
+    }
+
+    /* Floating emoji background */
+    .background-floaters {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 100vw;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .float-emoji {
+      position: absolute;
+      opacity: 0.08;
+      animation: floatUp linear infinite;
+      user-select: none;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh);
+        opacity: 0.12;
+      }
+      100% {
+        transform: translateY(-10vh);
+        opacity: 0;
+      }
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      color: #ffe0b2;
+      margin-top: 2rem;
+      z-index: 1;
+      position: relative;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+      z-index: 1;
+      position: relative;
+    }
+
+    .tab {
+      background: rgba(255, 224, 178, 0.08);
+      border: 1px solid #ffe0b2;
+      color: #ffe0b2;
+      padding: 0.7rem 1.5rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s ease;
+    }
+
+    .tab:hover {
+      background: rgba(255, 224, 178, 0.2);
+      box-shadow: inset 0 0 8px rgba(255, 224, 178, 0.3);
+    }
+
+    .tab-content {
+      display: none;
+      text-align: center;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: 2rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 224, 178, 0.1);
+      border-radius: 15px;
+      padding: 1.5rem;
+      width: 250px;
+      text-align: center;
+      transition: 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(6px);
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 30px rgba(255, 224, 178, 0.2);
+    }
+
+    .discord-widget {
+      margin: 3rem auto;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 224, 178, 0.1);
+      border-radius: 12px;
+      padding: 1rem;
+      max-width: 380px;
+    }
+
+    iframe {
+      border-radius: 8px;
+      width: 100%;
+    }
+
+    #cat-helper {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      font-size: 2rem;
+      cursor: pointer;
+      z-index: 1000;
+      user-select: none;
+    }
+
+    #cat-msg {
+      position: fixed;
+      bottom: 80px;
+      left: 30px;
+      background: rgba(0,0,0,0.6);
+      color: #ffe0b2;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      display: none;
+      pointer-events: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .card-container {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Background Emojis -->
+  <div class="background-floaters">
+    <script>
+      const icons = ['☕', '🍩', '🍔', '🥤', '🧁', '🍟', '🥐'];
+      const bg = document.currentScript.parentElement;
+      for (let i = 0; i < 30; i++) {
+        const emoji = document.createElement('div');
+        emoji.className = 'float-emoji';
+        emoji.innerText = icons[Math.floor(Math.random() * icons.length)];
+        emoji.style.left = Math.random() * 100 + 'vw';
+        emoji.style.top = Math.random() * 100 + 'vh';
+        emoji.style.animationDuration = (10 + Math.random() * 15) + 's';
+        emoji.style.fontSize = (1.2 + Math.random()) + 'rem';
+        bg.appendChild(emoji);
+      }
+    </script>
+  </div>
+
+  <!-- Main Content -->
+  <h1>☕ Chill Canteen</h1>
+
+  <div class="tabs">
+    <button class="tab" onclick="showTab('staff')">Staff</button>
+    <button class="tab" onclick="showTab('rules')">Rules</button>
+    <button class="tab" onclick="showTab('partner')">Partnering</button>
+  </div>
+
+  <div class="tab-content active" id="staff">
+    <div class="card-container">
+      <div class="card">👑 <br><strong>Owner</strong><br>Frosty</div>
+      <div class="card">🛡️ <br><strong>Admin</strong><br>Sky</div>
+      <div class="card">🎧 <br><strong>Moderator</strong><br>CozyCat</div>
+      <div class="card">🔥 <br><strong>Moderator</strong><br>Brews</div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="rules">
+    <div class="card-container">
+      <div class="card">1️⃣ <br>Respect everyone</div>
+      <div class="card">2️⃣ <br>No NSFW or spam</div>
+      <div class="card">3️⃣ <br>Use correct channels</div>
+      <div class="card">4️⃣ <br>Follow Discord TOS</div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="partner">
+    <div class="card-container">
+      <div class="card">💬 Active 100+ Members</div>
+      <div class="card">✅ SFW Only</div>
+      <div class="card">🔔 Partner Ping Allowed</div>
+      <div class="card">📢 Visible Partner Channel</div>
+    </div>
+  </div>
+
+  <div class="discord-widget">
+    <iframe src="https://discord.com/widget?id=1332583707663405086&theme=dark" height="500" allowtransparency="true" frameborder="0"
+      sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+  </div>
+
+  <!-- Cat Emoji & Message -->
+  <div id="cat-helper">🐱</div>
+  <div id="cat-msg">You clicked something!</div>
+
+  <script>
+    function showTab(id) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    const cat = document.getElementById('cat-helper');
+    const msg = document.getElementById('cat-msg');
+
+    document.addEventListener('click', (e) => {
+      let text = e.target.innerText || e.target.alt || 'something';
+      if (text.length > 40) text = text.substring(0, 40) + '...';
+      msg.innerText = `You clicked: ${text}`;
+      msg.style.display = 'block';
+      setTimeout(() => msg.style.display = 'none', 2000);
+    });
+  </script>
+
+</body>
+</html>
